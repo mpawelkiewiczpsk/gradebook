@@ -1,18 +1,26 @@
+require('dotenv').config();
+
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const sqlite3 = require('sqlite3').verbose();
 
 const app = express();
-const port = 3000;
-const SECRET_KEY = 'twoj_klucz_tajemny'; // Zmień na swój bezpieczny klucz
+const port = process.env.PORT || 3000;
+const SECRET_KEY = process.env.SECRET_KEY;
+const DB_PATH = process.env.DB_PATH || './dziennik.db';
+
+if (!SECRET_KEY) {
+    console.error('Błąd: SECRET_KEY nie jest ustawiony w pliku .env');
+    process.exit(1);
+}
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-// Połączenie z bazą SQLite (plikowa baza danych: dziennik.db)
-const db = new sqlite3.Database('./dziennik.db', (err) => {
+// Połączenie z bazą SQLite (plikowa baza danych)
+const db = new sqlite3.Database(DB_PATH, (err) => {
     if (err) {
         console.error('Błąd przy otwieraniu bazy danych:', err.message);
     } else {
@@ -24,33 +32,52 @@ const db = new sqlite3.Database('./dziennik.db', (err) => {
 db.serialize(() => {
     // Tabela użytkowników
     db.run(`CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT UNIQUE,
-    password TEXT,
-    role TEXT
-  )`);
+                                                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                                 username TEXT UNIQUE,
+                                                 password TEXT,
+                                                 role TEXT
+            )`);
 
     // Tabela ocen
     db.run(`CREATE TABLE IF NOT EXISTS grades (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    studentId INTEGER,
-    subject TEXT,
-    grade INTEGER,
-    FOREIGN KEY(studentId) REFERENCES users(id)
-  )`);
+                                                  id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                                  studentId INTEGER,
+                                                  subject TEXT,
+                                                  grade INTEGER,
+                                                  FOREIGN KEY(studentId) REFERENCES users(id)
+        )`);
 
-    // Dodanie przykładowych użytkowników oraz ocen, jeśli tabela jest pusta
+    // Sprawdzenie, czy tabela users jest pusta
     db.get(`SELECT COUNT(*) AS count FROM users`, (err, row) => {
         if (err) {
             console.error(err.message);
         } else if (row.count === 0) {
+            // Dodajemy 10 uczniów
             const insertUser = db.prepare(`INSERT INTO users (username, password, role) VALUES (?, ?, ?)`);
-            insertUser.run('uczen', 'pass', 'student');
-            insertUser.run('nauczyciel', 'pass', 'teacher');
+            for (let i = 1; i <= 10; i++) {
+                insertUser.run(`uczen${i}`, 'pass', 'student');
+            }
+            // Dodajemy 3 nauczycieli
+            for (let i = 1; i <= 3; i++) {
+                insertUser.run(`nauczyciel${i}`, 'pass', 'teacher');
+            }
             insertUser.finalize();
 
-            // Dodanie przykładowej oceny dla ucznia (zakładamy, że uczeń ma id = 1)
-            db.run(`INSERT INTO grades (studentId, subject, grade) VALUES (?, ?, ?)`, [1, 'Matematyka', 5]);
+            // Dodajemy oceny:
+            // Dla każdego z 6 przedmiotów dodajemy 5 ocen dla losowego ucznia (id od 1 do 10)
+            const subjects = ['Matematyka', 'Fizyka', 'Chemia', 'Biologia', 'Historia', 'Geografia'];
+            subjects.forEach((subject) => {
+                for (let i = 0; i < 5; i++) {
+                    // Losowa ocena z zakresu 2-6
+                    const grade = Math.floor(Math.random() * 5) + 2;
+                    // Losowy uczeń z id 1-10
+                    const studentId = Math.floor(Math.random() * 10) + 1;
+                    db.run(
+                        `INSERT INTO grades (studentId, subject, grade) VALUES (?, ?, ?)`,
+                        [studentId, subject, grade]
+                    );
+                }
+            });
         }
     });
 });
