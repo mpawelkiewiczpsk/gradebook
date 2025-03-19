@@ -1,0 +1,70 @@
+.Login
+{
+    max-width: 708px; 
+    margin: 0 auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    /* border:2px solid red; */
+    padding: 10px; 
+    background-color: var(--Login-form-bgcolor);
+    border-radius: 20px;
+    /* margin-top: 50px;  */
+    /* border:2px solid #f00;  */
+    /* display: inline-flex; */
+    box-shadow: 0px 10px 25px rgba(100, 100, 111, 0.5);
+    /* box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px; */
+}
+
+.LoginCarousel
+{
+    background-color:#0f0; 
+    width:408px;
+    height: 408px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.LoginCarousel > image
+{
+    width:408px;
+    height: 408px;
+}
+
+.LoginBackground
+{
+    background-color:var(--Login-bgcolor);
+    width: 100%;
+    height: 100vh;
+}
+
+.LoginForm
+{
+    padding:50px;
+    height:308px;
+}
+
+.LoginTitle
+{
+    text-align: center;
+    --ant-color-text-heading:var(--Login-font-color);
+}
+.LoginFormLabel
+{
+    color:var(--Login-font-color);
+}
+
+.LoginButton
+{
+    --ant-color-primary:var(--Login-button);
+    --ant-color-primary-hover:var(--Login-button-hover);
+}
+
+.LoginFormInput
+{
+    background-color: var(--Login-input-bgcolor) !important;
+    color:var(--Login-input-color);
+    --ant-color-icon: var(--Login-input-color);
+    --ant-color-icon-hover: var(--Login-input-icon-hover);
+}

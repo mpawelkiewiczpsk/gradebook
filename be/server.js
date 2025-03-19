@@ -44,6 +44,7 @@ db.serialize(() => {
                                                   studentId INTEGER,
                                                   subject TEXT,
                                                   grade INTEGER,
+                                                  weight INTEGER,
                                                   FOREIGN KEY(studentId) REFERENCES users(id)
         )`);
 
@@ -72,9 +73,10 @@ db.serialize(() => {
                     const grade = Math.floor(Math.random() * 5) + 2;
                     // Losowy uczeń z id 1-10
                     const studentId = Math.floor(Math.random() * 10) + 1;
+                    const weight = Math.floor(Math.random() * 5) + 1;
                     db.run(
-                        `INSERT INTO grades (studentId, subject, grade) VALUES (?, ?, ?)`,
-                        [studentId, subject, grade]
+                        `INSERT INTO grades (studentId, subject, grade, weight) VALUES (?, ?, ?, ?)`,
+                        [studentId, subject, grade, weight]
                     );
                 }
             });
@@ -97,18 +99,29 @@ function authenticateToken(req, res, next) {
 
 // Endpoint logowania
 app.post('/login', (req, res) => {
-    const { username, password } = req.body;
+    const { username, password} = req.body;
     db.get(`SELECT * FROM users WHERE username = ? AND password = ?`, [username, password], (err, row) => {
         if (err) {
             return res.status(500).json({ message: 'Błąd serwera' });
         }
         if (row) {
             // Tworzymy token zawierający id, username i role
-            const token = jwt.sign({ id: row.id, username: row.username, role: row.role }, SECRET_KEY);
-            res.json({ token });
+            const token = jwt.sign({ id: row.id, username: row.username, role: row.role, weight: row.weight }, SECRET_KEY);
+            const role = row.role;
+            res.json({ token, role});
         } else {
             res.status(401).json({ message: 'Nieprawidłowe dane logowania' });
         }
+    });
+});
+
+app.get('/students', (req, res) => {
+    // const { id ,username, role} = req.body;
+    db.all(`SELECT id,username FROM users WHERE role = ?`, ["student"],(err, rows) => {
+        if (err) {
+            return res.status(500).json({ message: 'Błąd serwera' });
+        }
+        res.json(rows);
     });
 });
 
@@ -137,8 +150,8 @@ app.post('/grades', authenticateToken, (req, res) => {
         return res.status(403).json({ message: 'Brak uprawnień do dodania ocen' });
     }
 
-    const { studentId, subject, grade } = req.body;
-    db.run(`INSERT INTO grades (studentId, subject, grade) VALUES (?, ?, ?)`, [studentId, subject, grade], function(err) {
+    const { studentId, subject, grade, weight } = req.body;
+    db.run(`INSERT INTO grades (studentId, subject, grade, weight) VALUES (?, ?, ?, ?)`, [studentId, subject, grade, weight], function(err) {
         if (err) {
             return res.status(500).json({ message: 'Błąd serwera' });
         }

@@ -1,0 +1,61 @@
+body
+{
+    margin: 0;
+    background-color: var(--Login-bgcolor);
+    /* background-color: red; */
+}
+
+:root
+{
+    --Login-button:#22a8ff;
+    --Login-button-hover:#22a8ff80;
+    --Login-form-bgcolor:#9bd9fe;
+    --Login-bgcolor:#c4ecfe;
+    --Login-font-color:#e9ffff;
+    --Login-input-bgcolor:#c4ecfe;
+    --Login-input-color:#1689fe;
+    --Login-input-icon-hover:#3B28CC;
+    --Menu-bgcol:#6dc6fe;
+}
+
+.ant-menu-horizontal > .ant-menu-item::after,
+.ant-menu-horizontal > .ant-menu-submenu::after {
+  border-bottom: none !important;
+  transition: none !important;
+}
+
+/* .ant-modal-content
+{
+    background-color: var(--Login-form-bgcolor) !important;
+} */
+
+.ant-btn-default {
+    background-color: var(--Login-button); /* Czerwone tło dla domyślnego przycisku */
+    border:none;
+}
+
+/* .ant-btn-default:hover {
+    outline: none !important; 
+} */
+
+.ant-select-selector:focus-within 
+{
+    border: none !important;
+    background-color: rgba(0,0,0,0.06) !important;
+}
+
+.ant-select-dropdown
+{
+    background-color: var(--Login-bgcolor) ;
+    outline: none;
+}
+
+.ant-select-item-option-content
+{
+    color:var(--Login-input-color);
+}
+
+.ant-select-selection-item
+{
+    color:var(--Login-font-color)
+}

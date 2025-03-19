@@ -1,0 +1,35 @@
+.GradeListBackground
+{
+    /* background-color: var(--Login-bgcolor); */
+    padding: 20px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.GradeListCard
+{
+    background-color: var(--Login-form-bgcolor);
+    box-shadow: 0px 10px 25px rgba(100, 100, 111, 0.5);
+    border: none;
+    flex:1 0 30%;
+    margin: 70px;
+    /* max-width: 590px; */
+    /* margin-bottom: 0; */
+}
+
+.GradeListCard > *
+{
+    color:var(--Login-input-color) !important;
+}
+
+.GradeListCard > *:first-child
+{
+    border-bottom: 2px solid var(--Login-button) !important
+}
+
+.GradeListLi
+{
+    --ant-color-split:var(--Menu-bgcol);
+    --ant-color-text:var(--Login-input-color);
+    /* background-color: red !important; */
+}
