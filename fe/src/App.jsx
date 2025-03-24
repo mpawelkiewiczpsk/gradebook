@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import LoginForm from './components/LoginForm';
 import GradeList from './components/GradeList';
+import UserList from './components/UserList';
 import { message, Button, Menu, Typography, Tooltip } from 'antd';
 import {RedoOutlined} from '@ant-design/icons';
 import styles from './App.module.css';
@@ -12,6 +13,7 @@ function App() {
     const [grades, setGrades] = useState([]);
     const [role, setRole] = useState('');
     const [students,setStudents] = useState([]);
+    const [users, setUsers] = useState([]);
 
     // Obsługa logowania
     const handleLogin = async (values) => {
@@ -82,6 +84,26 @@ function App() {
     }
 };
 
+const loadUsers = async () => {
+    try {
+        const response = await fetch('http://localhost:3000/users', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            const err = await response.json();
+            console.log(err.message || 'Błąd Pobierania Użytkowników');
+            return;
+        }
+        const data = await response.json();
+        console.log("http: "+ data);
+        setUsers(data);
+    } catch (error) {
+        console.log('Błąd podczas pobierania użytkowików');
+    }
+};
+
     // useEffect(() =>{
     //     loadStudents();
     // },[])
@@ -91,6 +113,9 @@ function App() {
         loadStudents()
         if (token) {
             fetchGrades();
+            if (role == 'admin'){
+            loadUsers();
+            }
         }
     }, [token]);
 
@@ -139,7 +164,7 @@ function App() {
                         </Menu.Item>
 
                         <Menu.Item style={{ cursor: 'default', marginLeft:25, marginBottom:'auto', marginTop:'auto'}} disabled>
-                            <Title level={4} style={{margin: 0, color:'var(--Login-font-color)'}}>Zalogowano jako {role=='teacher' ? 'nauczyciel' : 'uczen'} </Title>
+                            <Title level={4} style={{margin: 0, color:'var(--Login-font-color)'}}>Zalogowano jako {role=='teacher' ? 'nauczyciel' : role=='uczen' ? 'uczen' : 'admin'} </Title>
                         </Menu.Item>
 
                         <Menu.Item style={{ cursor: 'default' , marginRight: '10px', marginLeft: 'auto', marginBottom:'auto', marginTop:'auto'}} disabled>
@@ -149,6 +174,13 @@ function App() {
                     </Menu>
                     {/* </div> */}
                     <GradeList grades={grades} role={role} token={token} students={students} fetchGrades={fetchGrades}/>
+                    {role == 'admin' ? 
+                    <UserList 
+                        users={users}
+                        token={token}
+                        refreshUsers={loadUsers}
+                        /> 
+                    : null}
                 </>
             )}
         </div>

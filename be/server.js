@@ -62,6 +62,10 @@ db.serialize(() => {
             for (let i = 1; i <= 3; i++) {
                 insertUser.run(`nauczyciel${i}`, 'pass', 'teacher');
             }
+            // Dodajemy 2 adminów
+            for (let i = 1; i <= 2; i++) {
+                insertUser.run(`admin${i}`, 'pass', 'admin');
+            }
             insertUser.finalize();
 
             // Dodajemy oceny:
@@ -125,6 +129,41 @@ app.get('/students', (req, res) => {
     });
 });
 
+// Pobieranie użytkowników
+app.get('/users', (req, res) => {
+    // const { id ,username, role} = req.body;
+    db.all(`SELECT id,username,role FROM users`, [], (err, rows) => {
+        if (err) {
+            return res.status(500).json({ message: 'Błąd serwera' });
+        }
+        res.json(rows);
+    });
+});
+
+
+//dodawanie użytkowników
+app.post('/users', authenticateToken, (req, res) => {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Brak uprawnień do dodawania użytkowników' });
+    }
+    const { username, password, role } = req.body;
+  
+    db.run(
+      `INSERT INTO users (username, password, role) VALUES (?, ?, ?)`,
+      [username, password, role],
+      function(err) {
+        if (err) {
+          return res.status(500).json({ message: 'Błąd serwera lub nazwa użytkownika zajęta' });
+        }
+        // Return the newly created user
+        db.get(`SELECT id, username, role FROM users WHERE id = ?`, [this.lastID], (err, newUser) => {
+          if (err) return res.status(500).json({ message: 'Błąd serwera' });
+          res.json(newUser);
+        });
+      }
+    );
+  });
+
 // Endpoint pobierania ocen
 app.get('/grades', authenticateToken, (req, res) => {
     if (req.user.role === 'student') {
@@ -133,8 +172,8 @@ app.get('/grades', authenticateToken, (req, res) => {
             if (err) return res.status(500).json({ message: 'Błąd serwera' });
             res.json(rows);
         });
-    } else if (req.user.role === 'teacher') {
-        // Nauczyciel widzi wszystkie oceny
+    } else if (req.user.role === 'teacher' || req.user.role === 'admin') {
+        // Nauczyciel i admin widzą wszystkie oceny
         db.all(`SELECT * FROM grades`, (err, rows) => {
             if (err) return res.status(500).json({ message: 'Błąd serwera' });
             res.json(rows);
