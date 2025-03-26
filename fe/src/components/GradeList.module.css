@@ -1,7 +1,91 @@
+.GradeListHeader
+{
+    padding: 0;
+    position:fixed; 
+    z-index: 1; 
+    width:100%; 
+    display: flex;
+    background-color: #48b7ff;
+    box-shadow: 0px 10px 25px rgba(100, 100, 111, 0.5);
+    /* padding-inline: 0 ; */
+    /* padding: 10px; */
+    /* height:50px; */
+    /*
+    display: flex; 
+    justify-content: flex-end; 
+    /* padding: 10px;  /
+    background-Color:#d1d1d1; */
+}
+
+.GradeListContent
+{
+    margin-top: 64px;
+    overflow: auto;
+    overflow-y:scroll;
+    margin-left: 200px; 
+    width:75%;
+    height:calc(100vh - 64px);
+    background-color: var(--Login-bgcolor);
+}
+
+/* .ant-table-cell
+{
+    --ant-table-header-bg: red !important;
+    --ant-table-header-color:red !important;
+} */
+
+.GradeListTable :global(.ant-table-thead) {
+    --ant-table-header-bg: var(--Login-input-color) !important;
+    --ant-table-header-color: var(--Login-font-color) !important;
+}
+
+.GradeListTable :global(.ant-table) {
+    --ant-color-bg-container: var(--Menu-bgcol) !important; /* Tło tylko dla tbody */
+    --ant-color-text:var(--Login-font-color) !important;
+}
+
+.GradeListTable :global(.ant-table-tbody) {
+    --ant-table-border-color: var(--Login-button-hover) !important;
+}
+
+.GradeListMenuItem
+{
+    /* background-color: none; */
+    color: var(--Login-font-color) !important;
+    text-align: center;
+    --ant-menu-dark-item-selected-bg:var(--Login-input-color) !important;
+}
+
+.GradeListSider :global(.ant-menu)
+{
+    --ant-menu-dark-item-bg:none !important;
+}
+
+
+/* :global(.ant-menu-item-selected) 
+{
+    background-color: #ff0000 !important; 
+} */
+
+.GradeListSider
+{
+    padding: 20px;
+    /* padding-bottom: 0; */
+    overflow: hidden;
+    background-color: var(--Login-button-hover);
+}
+
+.GradeListSider > *
+{
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
 .GradeListBackground
 {
     /* background-color: var(--Login-bgcolor); */
-    padding: 20px;
+    /* padding: 20px; */
     display: flex;
     flex-wrap: wrap;
 }
@@ -11,7 +95,7 @@
     background-color: var(--Login-form-bgcolor);
     box-shadow: 0px 10px 25px rgba(100, 100, 111, 0.5);
     border: none;
-    flex:1 0 30%;
+    flex:1 0 20%;
     margin: 70px;
     /* max-width: 590px; */
     /* margin-bottom: 0; */

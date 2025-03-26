@@ -1,0 +1,23 @@
+.UserListTable :global(.ant-table-thead)
+{
+    --ant-table-header-bg:var(--Login-input-color) !important;
+    --ant-table-header-color:var(--Login-font-color) !important;
+}
+
+.UserListTable :global(.ant-table-body)
+{
+    --ant-table-border-color:var(--Login-button-hover) !important;
+}
+
+.UserListTable :global(.ant-table)
+{
+    --ant-color-bg-container:var(--Menu-bgcol) !important;
+    --ant-color-text:var(--Login-font-color) !important;
+}
+
+.UserListTable
+{
+    margin: 100px;
+    margin-top: 50px;
+    margin-bottom: 0;
+}

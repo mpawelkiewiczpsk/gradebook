@@ -153,7 +153,7 @@ class AddGrade extends Component
                     placeholder="Wybierz Ocenę"
                     value={this.state.selectedGrade}
                     onChange={(value) => this.setState({ selectedGrade: value })}
-                    style={{ width: '300px', marginBottom: '20px' }}
+                    style={{ width: '100%', marginBottom: '20px' }}
                     variant="filled"
                     >
                         {
@@ -174,7 +174,7 @@ class AddGrade extends Component
                     placeholder="Wybierz Ucznia"
                     value={this.state.selectedStudent}
                     onChange={(value) => this.setState({ selectedStudent: value })}
-                    style={{ width: '300px', marginBottom: '20px' }}
+                    style={{ width: '100%', marginBottom: '20px' }}
                     variant="filled"
                     >
                         {this.state.studentsList.map((student, index) => (
@@ -191,7 +191,7 @@ class AddGrade extends Component
                     placeholder="Waga oceny"
                     value={this.state.selectedWeight}
                     onChange={(value) => this.setState({ selectedWeight: value })}
-                    style={{ width: '300px', marginBottom: '20px' }}
+                    style={{ width: '100%', marginBottom: '20px' }}
                     variant="filled"
                     >
                         {

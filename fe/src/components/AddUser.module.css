@@ -1,0 +1,40 @@
+.AddUserButton
+{
+    --ant-color-primary:#04D94F;
+    --ant-color-primary-hover:#04BF45;
+}
+
+.AddUserModal > * 
+{
+    --ant-modal-content-bg: var(--Login-form-bgcolor);
+    --ant-modal-header-bg:var(--Login-form-bgcolor);
+    --ant-modal-title-color:var(--Login-font-color);
+}
+
+.AddUserModal > *:focus
+{
+    --ant-modal-content-bg: var(--Login-form-bgcolor);
+    --ant-modal-header-bg:var(--Login-form-bgcolor);
+
+}
+
+.AddUserModal > * > * > * > *
+{
+    color:var(--Login-font-color);
+    --ant-color-primary:#04D94F;
+    --ant-color-primary-hover:#04BF45;
+}
+
+.AddUserModal > * > * > * > *:hover
+{
+    --ant-button-default-hover-bg:var(--Login-input-color);
+    --ant-button-default-hover-color:var(--Login-font-color);
+    --ant-button-default-hover-border:none;
+    --ant-button-default-hover-border-color:var(--Login-font-color);
+}
+
+.AddUserModal :global(.ant-input)
+{
+    --ant-input-active-border-color:rgba(0,0,0,0) !important;
+    --ant-input-active-bg:rgba(0,0,0,0.06) !important;
+}

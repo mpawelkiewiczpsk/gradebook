@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import LoginForm from './components/LoginForm';
 import GradeList from './components/GradeList';
 import UserList from './components/UserList';
-import { message, Button, Menu, Typography, Tooltip } from 'antd';
-import {RedoOutlined} from '@ant-design/icons';
-import styles from './App.module.css';
+import { message} from 'antd';
+// import { message, Button, Menu, Typography, Tooltip } from 'antd';
+// import {RedoOutlined} from '@ant-design/icons';
+// import styles from './App.module.css';
 
-const { Title } = Typography;
+// const { Title } = Typography;
 
 function App() {
     const [token, setToken] = useState('');
@@ -143,7 +144,7 @@ const loadUsers = async () => {
                             Wyloguj
                         </Button>
                     </Menu> */}
-                    <Menu
+                    {/* <Menu
                     mode="horizontal"
                     theme="light"
                     // selectable={false}
@@ -171,16 +172,16 @@ const loadUsers = async () => {
                             <Title level={2} style={{ margin: 0, color:'var(--Login-font-color)' }}>Twoje Oceny</Title>
                         </Menu.Item>
 
-                    </Menu>
+                    </Menu> */}
                     {/* </div> */}
-                    <GradeList grades={grades} role={role} token={token} students={students} fetchGrades={fetchGrades}/>
-                    {role == 'admin' ? 
+                    <GradeList grades={grades} role={role} token={token} students={students} fetchGrades={fetchGrades} logout={handleLogout} users={users} refreshUsers={loadUsers}/>
+                    {/* {role == 'admin' ? 
                     <UserList 
                         users={users}
                         token={token}
                         refreshUsers={loadUsers}
                         /> 
-                    : null}
+                    : null} */}
                 </>
             )}
         </div>

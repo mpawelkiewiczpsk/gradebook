@@ -35,7 +35,9 @@ db.serialize(() => {
                                                  id INTEGER PRIMARY KEY AUTOINCREMENT,
                                                  username TEXT UNIQUE,
                                                  password TEXT,
-                                                 role TEXT
+                                                 role TEXT,
+                                                 assigned_subject1 TEXT,
+                                                 assigned_subject2 TEXT 
             )`);
 
     // Tabela ocen
@@ -54,23 +56,28 @@ db.serialize(() => {
             console.error(err.message);
         } else if (row.count === 0) {
             // Dodajemy 10 uczniów
-            const insertUser = db.prepare(`INSERT INTO users (username, password, role) VALUES (?, ?, ?)`);
+            const insertUser = db.prepare(`INSERT INTO users (username, password, role, assigned_subject1, assigned_subject2) VALUES (?, ?, ?, ?, ?)`);
             for (let i = 1; i <= 10; i++) {
-                insertUser.run(`uczen${i}`, 'pass', 'student');
+                insertUser.run(`uczen${i}`, 'pass', 'student', null, null);
             }
             // Dodajemy 3 nauczycieli
+            const subjects = ['Matematyka', 'Fizyka', 'Chemia', 'Biologia', 'Historia', 'Geografia'];
             for (let i = 1; i <= 3; i++) {
-                insertUser.run(`nauczyciel${i}`, 'pass', 'teacher');
+                    let assignedSubjectId1 = Math.floor(Math.random() * subjects.length);
+                    let assignedSubjectId2;
+                do {
+                    assignedSubjectId2 = Math.floor(Math.random() * subjects.length);
+                } while(assignedSubjectId1 == assignedSubjectId2);
+                insertUser.run(`nauczyciel${i}`, 'pass', 'teacher', subjects[assignedSubjectId1], subjects[assignedSubjectId2]);
             }
             // Dodajemy 2 adminów
             for (let i = 1; i <= 2; i++) {
-                insertUser.run(`admin${i}`, 'pass', 'admin');
+                insertUser.run(`admin${i}`, 'pass', 'admin', null, null);
             }
             insertUser.finalize();
 
             // Dodajemy oceny:
             // Dla każdego z 6 przedmiotów dodajemy 5 ocen dla losowego ucznia (id od 1 do 10)
-            const subjects = ['Matematyka', 'Fizyka', 'Chemia', 'Biologia', 'Historia', 'Geografia'];
             subjects.forEach((subject) => {
                 for (let i = 0; i < 5; i++) {
                     // Losowa ocena z zakresu 2-6
@@ -110,7 +117,14 @@ app.post('/login', (req, res) => {
         }
         if (row) {
             // Tworzymy token zawierający id, username i role
-            const token = jwt.sign({ id: row.id, username: row.username, role: row.role, weight: row.weight }, SECRET_KEY);
+            const token = jwt.sign({
+                id: row.id,
+                username: row.username,
+                role: row.role,
+                weight: row.weight,
+                assigned_subject1: row.assigned_subject1,
+                assigned_subject2: row.assigned_subject2
+            }, SECRET_KEY);
             const role = row.role;
             res.json({ token, role});
         } else {
@@ -132,7 +146,7 @@ app.get('/students', (req, res) => {
 // Pobieranie użytkowników
 app.get('/users', (req, res) => {
     // const { id ,username, role} = req.body;
-    db.all(`SELECT id,username,role FROM users`, [], (err, rows) => {
+    db.all(`SELECT * FROM users`, [], (err, rows) => {
         if (err) {
             return res.status(500).json({ message: 'Błąd serwera' });
         }
@@ -146,11 +160,11 @@ app.post('/users', authenticateToken, (req, res) => {
     if (req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Brak uprawnień do dodawania użytkowników' });
     }
-    const { username, password, role } = req.body;
+    const { username, password, role, assigned_subject1, assigned_subject2 } = req.body;
   
     db.run(
-      `INSERT INTO users (username, password, role) VALUES (?, ?, ?)`,
-      [username, password, role],
+      `INSERT INTO users (username, password, role, assigned_subject1, assigned_subject2) VALUES (?, ?, ?, ?, ?)`,
+      [username, password, role, assigned_subject1, assigned_subject2],
       function(err) {
         if (err) {
           return res.status(500).json({ message: 'Błąd serwera lub nazwa użytkownika zajęta' });
@@ -172,13 +186,19 @@ app.get('/grades', authenticateToken, (req, res) => {
             if (err) return res.status(500).json({ message: 'Błąd serwera' });
             res.json(rows);
         });
-    } else if (req.user.role === 'teacher' || req.user.role === 'admin') {
-        // Nauczyciel i admin widzą wszystkie oceny
+    } else if (req.user.role === 'teacher') {
+        // Nauczyciel widzi oceny ze swoich przedmiotów
+        db.all(`SELECT * FROM grades WHERE subject = ? OR subject = ?`, [req.user.assigned_subject1, req.user.assigned_subject2] ,(err, rows) => {
+            if (err) return res.status(500).json({ message: 'Błąd serwera' });
+            res.json(rows);
+        });
+
+    } else if (req.user.role === 'admin'){
         db.all(`SELECT * FROM grades`, (err, rows) => {
             if (err) return res.status(500).json({ message: 'Błąd serwera' });
             res.json(rows);
         });
-    } else {
+    }else{
         res.sendStatus(403);
     }
 });
